@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 import re
+import sys
 
-f = open('test.cc', 'r')
+if len(sys.argv) < 1:
+    f = open(sys.argv[1], 'r')
+else:
+    f = open('test.cc', 'r')
 buf = []
 
 def parseString():
