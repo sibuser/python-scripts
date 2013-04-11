@@ -83,35 +83,32 @@ for line in src:
         else:
             buf.append(line)
 
-        # if len(line) is not 4:
-        #     tmp = list(line)
-        #     buf.append(''.join(tmp[0:3]) + '\n')
-        #     buf.append(' * ' + ''.join(tmp[4:]))
-        # else:
-        buf.append(line)
-
-        for line2 in f:
-
-            if '\\brief' in line2:
-                briefDetails(buf,line2)
+        for line2 in src:
+            if "\\brief" in line2:
+                tagDescr(buf,line2)
+            elif "\details" in line2:
+                tagDescr(buf,line2)
+            elif "\pre" in line2:
+                tagDescr(buf,line2)
+            elif "\\return" in line2:
+                tagArgDescr(buf,line2)
+            elif "\\retval" in line2:
+                tagArgDescr(buf,line2)
+            elif "\exception" in line2:
+                tagArgDescr(buf,line2)
+            elif "\\remark" in line2:
+                tagArgDescr(buf,line2, 1)
+            elif "\tagTwoArgDescr" in line2:
+                tagTwoArgDescr(buf,line2)
+            elif "\code" in line2:
+                # add all strings from \code block into buffer as unchanged
+                buf.append(line2)
+                for i in src:
+                    buf.append(i)
+                    if "\endcode" in i: break
                 continue
-            elif '\details' in line2:
-                briefDetails(buf,line2)
-                continue
-            elif '\pre' in line2:
-                briefDetails(buf,line2)
-                continue
-            elif '\\return' in line2:
-                restPart(buf,line2)
-            elif '\\retval' in line2:
-                restPart(buf,line2)
-            elif '\exception' in line2:
-                restPart(buf,line2)
-            elif '\\remark' in line2:
-                restPart(buf,line2, 1)
-            elif '\param' in line2:
-                param(buf,line2)
-            elif re.match(r'\s\*\s{3,}', line2):
+            #
+            elif re.match(r"\s\*\s{3,}[\w]+", line2):
                 alignment(buf,line2)
             else:
                 buf.append(line2)
