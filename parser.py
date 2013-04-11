@@ -18,34 +18,59 @@ args = parser.parse_args()
 src = open(args.src, "r+")
 
 buf = []
-intend = 0
 
-def briefDetails(buf, string, amountOfSpaces = 12):
-    matcher = re.match(r'(\s\*\s)(\\\w+)(\s*)(.*)', string)
-    firstPart = ' * ' + matcher.group(2)
-    buf.append(firstPart + ' ' * (amountOfSpaces - len(firstPart)) + matcher.group(4) + '\n')
+intend = 0
+'''
+Function searches the string in format:
+* \tag + description
+* and set the indentation upon multi string description.
+'''
+def tagDescr(buf, string, amountOfSpaces = 12):
+    matcher = re.match(r"(\s\*\s)(\\\w+)(\s*)(.*)", string)
+    firstPart = " * " + matcher.group(2)
+    buf.append(firstPart + " " * (amountOfSpaces - len(firstPart)) + matcher.group(4) + "\n")
     global intend
     intend = 10
-
-def restPart(buf, string, amountOfSpaces = 31):
-    matcher = re.match(r'(\s\*\s)(\\\w+)(\s*)(\w*)(\s+)(.*)', string)
-    firstPart = ' * ' + matcher.group(2) + ' ' + matcher.group(4)
-    buf.append(firstPart + ' ' * (amountOfSpaces - len(firstPart)) + matcher.group(6) + '\n')
+'''
+Function searches the string in format:
+* \tag + argument + description
+* and set the indentation upon multi string description.
+'''
+def tagArgDescr(buf, string, amountOfSpaces = 31):
+    matcher = re.match(r"(\s\*\s)(\\\w+)(\s*)(\w*)(\s+)(.*)", string)
+    firstPart = " * " + matcher.group(2) + " " + matcher.group(4)
+    if len(firstPart) < 31:
+        buf.append(firstPart + " " * (amountOfSpaces - len(firstPart)) + matcher.group(6) + "\n")
+    else:
+        buf.append(firstPart + "\n *" + ' ' * (amountOfSpaces - 2) +
+                    matcher.group(6) + "\n")
     global intend
     intend = 29
-
-def param(buf, string, amountOfSpaces = 31):
-    matcher = re.match(r'(\s\*\s)(\\\w+)(\s*)(\[.*\])(\s*)(\w*)(\s+)(.*)', string)
-    firstPart = ' * ' + matcher.group(2) + ' ' + matcher.group(4) + ' ' + matcher.group(6)
-    buf.append( firstPart +
-               ' ' * (amountOfSpaces - len(firstPart)) +
-               matcher.group(8) + '\n')
+'''
+Function searches the string in format:
+ * \tag [in/out] argument description
+* and set the indentation upon multi string description.
+'''
+def tagTwoArgDescr(buf, string, amountOfSpaces = 31):
+    #                 (r"( * )(first word)(all spaces)([in or out])(all spaces)
+    #                 (name of argument)(spaces)(last part of string)")
+    matcher = re.match(r"(\s\*\s)(\\\w+)(\s*)(\[.*\])(\s*)(\w*)(\s+)(.*)", string)
+    firstPart = " * " + matcher.group(2) + " " + matcher.group(4) + " " + matcher.group(6)
+    if len(firstPart) > 31:
+        buf.append(firstPart + "\n *" + ' ' * (amountOfSpaces - 2) +
+                    matcher.group(8) + "\n")
+    else:
+        buf.append(firstPart + " " * (amountOfSpaces - len(firstPart)) +
+                    matcher.group(8) + "\n")
+    # else:
     global intend
     intend = 29
-
+'''
+Alignments all string of multi string descroption.
+'''
 def alignment(buf, string):
-    matcher = re.match(r'(\s\*)(\s*)(.*)', string)
-    buf.append(' *' + ' ' * intend + matcher.group(3) + '\n')
+    matcher = re.match(r"(\s\*)(\s*)(.*)", string)
+    buf.append(" *" + " " * intend + matcher.group(3) + "\n")
 
 for line in f:
     if '/**' in line:
