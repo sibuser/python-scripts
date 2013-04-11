@@ -1,11 +1,22 @@
 #!/usr/bin/env python3
+
 import re
 import sys
+import argparse
 
-if len(sys.argv) < 1:
-    f = open(sys.argv[1], 'r')
-else:
-    f = open('test.cc', 'r')
+parser = argparse.ArgumentParser(description="This tool formats the text from \
+                                                the input file and  \
+                                                fixes all indentations in Doxygen \
+                                                documentation. By default result \
+                                                will be printed into output stream")
+
+parser.add_argument("-i", help="overwrites the original file with a new one", action="store_true")
+parser.add_argument("src", help="source file")
+parser.add_argument("-dst", help="saves result into file")
+args = parser.parse_args()
+
+src = open(args.src, "r+")
+
 buf = []
 intend = 0
 
