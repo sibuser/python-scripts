@@ -106,8 +106,6 @@ for line in src:
                 for i in src:
                     buf.append(i)
                     if "\endcode" in i: break
-                continue
-            #
             elif re.match(r"\s\*\s{3,}[\w]+", line2):
                 alignment(buf,line2)
             else:
@@ -115,8 +113,22 @@ for line in src:
             if "*/" in line2: break
     else:
         buf.append(line)
-r = open('result.cc', 'w')
+src.close()
 
-for i in buf:
-    r.write(i)
-
+if args.i:
+    # open source file again for writing data.
+    src = open(args.src,"w")
+    for line in buf:
+        src.write(line)
+    src.close()
+elif args.dst:
+    # if was passed-in a name of destination file.
+    # file will be overwritten
+    dst = open(args.dst, "w")
+    for line in buf:
+        dst.write(line)
+    dst.close()
+else:
+    # by default we will print all buffer into standard output
+    for line in buf:
+        sys.stdout.write(str(line))
