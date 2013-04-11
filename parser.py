@@ -72,8 +72,16 @@ def alignment(buf, string):
     matcher = re.match(r"(\s\*)(\s*)(.*)", string)
     buf.append(" *" + " " * intend + matcher.group(3) + "\n")
 
-for line in f:
-    if '/**' in line:
+for line in src:
+    if "/**" in line:
+        # if first string of comments longer than 4 characters
+        # we will split it on two strings.
+        if len(line) > 4:
+            matcher = re.match(r"(\/\**)(\\\w.*)", line)
+            buf.append('/**\n')
+            tagDescr(buf, ' * ' + matcher.group(2))
+        else:
+            buf.append(line)
 
         # if len(line) is not 4:
         #     tmp = list(line)
