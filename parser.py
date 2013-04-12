@@ -162,6 +162,8 @@ for line in src:
         for line2 in src:
             if "\\brief" in line2:
                 tagDescr(buf,line2)
+            elif "\\note" in line2:
+                tagDescr(buf,line2)
             elif "\\attention" in line2:
                 tagDescr(buf,line2)
             elif "\details" in line2:
