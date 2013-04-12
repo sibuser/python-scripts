@@ -47,7 +47,8 @@ def tagDescr(buf, string, amountOfSpaces = 12):
         # space between tag and description.
         else:
             buf.append(firstPart + " " + result.group(4) + "\n")
-
+    else:
+        buf.append(string)
     global intend
     intend = 10
 
@@ -76,6 +77,8 @@ def tagArgDescr(buf, string, amountOfSpaces = 31):
         else:
             buf.append(firstPart + "\n *" + ' ' * (amountOfSpaces - 2) +
                         result.group(6) + "\n")
+    else:
+        buf.append(string)
     global intend
     intend = 29
 '''
@@ -115,6 +118,9 @@ def tagTwoArgDescr(buf, string, amountOfSpaces = 31):
         else:
             buf.append(firstPart + " " * (amountOfSpaces - len(firstPart)) +
                         result.group(12) + "\n")
+    else:
+        buf.append(string)
+
     global intend
     intend = 29
 '''
@@ -129,6 +135,9 @@ def alignment(buf, string):
 
     if result:
         buf.append(" *" + " " * intend + result.group(2) + "\n")
+    else:
+        buf.append(string)
+
 
 for line in src:
     if "/**" in line:
@@ -143,6 +152,9 @@ for line in src:
             if result:
                 buf.append('/**\n')
                 tagDescr(buf, ' * ' + result.group(2))
+            else:
+                buf.append(line)
+
         else:
             buf.append(line)
 
