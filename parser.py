@@ -32,7 +32,7 @@ def tagDescr(buf, string, amountOfSpaces = 12):
         buf.append(' * \n')
 
     matcher = re.compile(r"""
-        (\s\*\s) # all spaces and asterisks before tag
+        (\s\*\s+) # all spaces and asterisks before tag
         (\\\w+)  # tag itself
         (\s+)    # all spaces between tag and description
         (.*)     # description
