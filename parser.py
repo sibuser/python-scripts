@@ -146,9 +146,9 @@ def main():
             # 1 \tag + argument + description
             ('\\return', '\\retval', '\exception', '\\remark'),
             # 2 \tag + [in/out] + argument + description
-            ('\\param'),
+            ('\\param',),
             # 3 add a unchanged string into buffer
-            ('\\code'))
+            ('\code',))
 
     for line in src:
         if "/**" in line:
