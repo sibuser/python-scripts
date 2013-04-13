@@ -10,7 +10,10 @@ def main():
                                                     documentation. By default result \
                                                     will be printed into output stream")
 
-    parser.add_argument("-i", help="overwrites the original file with a new one", action="store_true")
+    parser.add_argument("-i", help="overwrites the original file with a new one",
+                        action="store_true", default=False)
+    parser.add_argument("-p", help="generate a diff patch ",
+                        action="store_true", default=False)
     parser.add_argument("src", help="source file")
     parser.add_argument("-dst", help="saves result into file")
     args = parser.parse_args()
