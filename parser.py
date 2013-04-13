@@ -211,8 +211,7 @@ def main():
         dst.close()
     else:
         # by default we will print all buffer into standard output
-        for line in buf:
-            sys.stdout.write(str(line))
+        sys.stdout.writelines(buf)
 
 if __name__ == '__main__':
     main()
