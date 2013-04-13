@@ -143,6 +143,14 @@ def main():
         else:
             buf.append(string)
 
+            # 0 \tag + description
+    tags = (('\\brief', '\\note', '\\attention', '\details', '\pre'),
+            # 1 \tag + argument + description
+            ('\\return', '\\retval', '\exception', '\\remark'),
+            # 2 \tag + [in/out] + argument + description
+            ('\\param'),
+            # 3 add a unchanged string into buffer
+            ('\\code'))
 
     for line in src:
         if "/**" in line:
@@ -159,39 +167,23 @@ def main():
                     tagDescr(buf, ' * ' + result.group(2))
                 else:
                     buf.append(line)
-
             else:
                 buf.append(line)
 
-
             for line2 in src:
-                if "\\brief" in line2:
+                if any(word in line2 for word in tags[0]):
                     tagDescr(buf,line2)
-                elif "\\note" in line2:
-                    tagDescr(buf,line2)
-                elif "\\attention" in line2:
-                    tagDescr(buf,line2)
-                elif "\details" in line2:
-                    tagDescr(buf,line2)
-                elif "\pre" in line2:
-                    tagDescr(buf,line2)
-                elif "\\return" in line2:
-                    tagArgDescr(buf,line2)
-                elif "\\retval" in line2:
-                    tagArgDescr(buf,line2)
-                elif "\exception" in line2:
-                    tagArgDescr(buf,line2)
-                elif "\\remark" in line2:
+                elif any(word in line2 for word in tags[1]):
                     tagArgDescr(buf,line2, 1)
-                elif "\\param" in line2:
+                elif any(word in line2 for word in tags[2]):
                     tagTwoArgDescr(buf,line2)
-                elif "\code" in line2:
-                    # add all strings from \code block into buffer as unchanged
+                elif any(word in line2 for word in tags[3]):
+                    # add all strings into buffer as unchanged
                     buf.append(line2)
                     for i in src:
                         buf.append(i)
                         if "\endcode" in i: break
-                elif re.match(r"\s\*\s+[\w]+", line2):
+                elif re.match(r"\s\*\s+\w+", line2):
                     alignment(buf,line2)
                 else:
                     buf.append(line2)
