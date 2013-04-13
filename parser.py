@@ -24,7 +24,7 @@ def main():
 
     buf = []
 
-    intend = 0 #for alignment multi string descriptions
+    intend = 1 #for alignment multi string descriptions
 
     '''
     Function searches the string in format:
