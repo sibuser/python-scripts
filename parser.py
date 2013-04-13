@@ -5,14 +5,17 @@ import sys
 import argparse
 import difflib
 
-def main():
-    parser = argparse.ArgumentParser(description="This tool formats the text from \
-                                                    the input file and  \
-                                                    fixes all indentations in Doxygen \
-                                                    documentation. By default result \
-                                                    will be printed into output stream")
 
-    parser.add_argument("-i", help="overwrites the original file with a new one",
+def main():
+    parser = argparse.ArgumentParser(description="This tool formats the text \
+                                                    from the input file and  \
+                                                    fixes all indentations \
+                                                    in Doxygen \
+                                                    documentation. By default \
+                                                    result will be printed \
+                                                    into output stream")
+
+    parser.add_argument("-i", help="overwrites the original file",
                         action="store_true", default=False)
     parser.add_argument("-p", help="generate a diff patch ",
                         action="store_true", default=False)
@@ -24,14 +27,14 @@ def main():
 
     buf = []
 
-    intend = 1 #for alignment multi string descriptions
+    intend = 1  # for alignment multi string descriptions
 
     '''
     Function searches the string in format:
     * \tag + description
     * and set the indentation upon multi string description.
     '''
-    def tagDescr(buf, string, amountOfSpaces = 12):
+    def tagDescr(buf, string, amountOfSpaces=12):
         # add one empty string between next tag and last string of description
 
         matcher = re.compile(r"""
@@ -45,9 +48,10 @@ def main():
             firstPart = " * " + result.group(2)
 
             if len(firstPart) < 13:
-                buf.append(firstPart + " " * (amountOfSpaces - len(firstPart)) + result.group(4) + "\n")
-            # if tag and name of argument are longer then 13 char we will add only one
-            # space between tag and description.
+                buf.append(firstPart + " " * (amountOfSpaces - len(firstPart))
+                    + result.group(4) + "\n")
+            # if tag and name of argument are longer then 13 char we
+            # will add only one space between tag and description.
             else:
                 buf.append(firstPart + " " + result.group(4) + "\n")
         else:
@@ -60,7 +64,7 @@ def main():
     * \tag + argument + description
     * and set the indentation upon multi string description.
     '''
-    def tagArgDescr(buf, string, amountOfSpaces = 31):
+    def tagArgDescr(buf, string, amountOfSpaces=31):
         if '*\n' not in buf[len(buf) - 1]:
             buf.append(' * \n')
 
@@ -76,7 +80,8 @@ def main():
         if result:
             firstPart = " * " + result.group(2) + " " + result.group(4)
             if len(firstPart) < 31:
-                buf.append(firstPart + " " * (amountOfSpaces - len(firstPart)) + result.group(6) + "\n")
+                buf.append(firstPart + " " * (amountOfSpaces - len(firstPart))
+                    + result.group(6) + "\n")
             else:
                 buf.append(firstPart + "\n *" + ' ' * (amountOfSpaces - 2) +
                             result.group(6) + "\n")
@@ -89,7 +94,7 @@ def main():
     * \tag [in/out] argument description
     * and set the indentation upon multi string description.
     '''
-    def tagTwoArgDescr(buf, string, amountOfSpaces = 31):
+    def tagTwoArgDescr(buf, string, amountOfSpaces=31):
         if '*\n' not in buf[len(buf) - 1]:
             buf.append(' * \n')
 
@@ -111,16 +116,17 @@ def main():
 
         result = matcher.match(string)
         if result:
-            IN_OUT   = (8,7)[result.group(8) == None]
-            ARG_NAME = (10,5)[result.group(8) == None]
+            iin_out = (8, 7)[result.group(8) == None]
+            arg_name = (10, 5)[result.group(8) == None]
 
-            firstPart = " * " + result.group(2) + " " + result.group(IN_OUT) + " " + result.group(ARG_NAME)
+            firstPart = " * " + result.group(2) + " " + result.group(iin_out)
+            + " " + result.group(arg_name)
             if len(firstPart) > 31:
                 buf.append(firstPart + "\n *" + ' ' * (amountOfSpaces - 2) +
                             result.group(12) + "\n")
             else:
-                buf.append(firstPart + " " * (amountOfSpaces - len(firstPart)) +
-                            result.group(12) + "\n")
+                buf.append(firstPart + " " * (amountOfSpaces - len(firstPart))
+                    + result.group(12) + "\n")
         else:
             buf.append(string)
 
@@ -158,7 +164,7 @@ def main():
                 matcher = re.compile(r"""
                     ([\s/*]+) # search /** in any variants
                     (\\\w+.*)    # take any symbols when tag is appeared
-                    """,re.VERBOSE)
+                    """, re.VERBOSE)
                 result = matcher.match(line)
                 if result:
                     buf.append('/**\n')
@@ -170,33 +176,35 @@ def main():
 
             for line2 in src:
                 if any(word in line2 for word in tags[0]):
-                    tagDescr(buf,line2)
+                    tagDescr(buf, line2)
                 elif any(word in line2 for word in tags[1]):
-                    tagArgDescr(buf,line2)
+                    tagArgDescr(buf, line2)
                 elif any(word in line2 for word in tags[2]):
-                    tagTwoArgDescr(buf,line2)
+                    tagTwoArgDescr(buf, line2)
                 elif any(word in line2 for word in tags[3]):
                     # add all strings into buffer as unchanged
                     buf.append(line2)
                     for i in src:
                         buf.append(i)
-                        if "\endcode" in i: break
+                        if "\endcode" in i:
+                            break
                 elif re.match("\s+\*\s+\w+", line2):
-                    alignment(buf,line2)
+                    alignment(buf, line2)
                 else:
                     buf.append(line2)
-                if "*/" in line2: break
+                if "*/" in line2:
+                    break
         else:
             buf.append(line)
     src.close()
 
     if args.p:
-        source = open(args.src,'r').readlines()
+        source = open(args.src, 'r').readlines()
         diff = difflib.unified_diff(source, buf)
         sys.stdout.writelines(diff)
     elif args.i:
         # open source file again for writing data.
-        src = open(args.src,"w")
+        src = open(args.src, "w")
         for line in buf:
             src.write(line)
         src.close()
