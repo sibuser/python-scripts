@@ -33,8 +33,6 @@ def main():
     '''
     def tagDescr(buf, string, amountOfSpaces = 12):
         # add one empty string between next tag and last string of description
-        if '*\n' not in buf[len(buf) - 1]:
-            buf.append(' * \n')
 
         matcher = re.compile(r"""
             (\s\*\s+) # all spaces and asterisks before tag
@@ -97,15 +95,15 @@ def main():
 
         matcher = re.compile(r"""
             (\s\*\s) # all spaces and asterisks before tag
-            (\\\w+)
-            (\s+)
+            (\\\w+)  # tag
+            (\s+)    # spaces between tag and argument
             (
                 (\w+)    # name of argument
-                (\s+)
-                (\[.+\])|
-                (\[.+\])
-                (\s+)
-                (\w+)
+                (\s+)    # spaces
+                (\[.+\])| # might be [any word]
+                (\[.+\])  # might be [any word]
+                (\s+)    # spaces
+                (\w+)    # name of argument
             )
             (\s+)    # all spaces between tag and description
             (.*)     # description
@@ -158,7 +156,7 @@ def main():
             # we will split it on two strings.
             if len(line) > 4:
                 matcher = re.compile(r"""
-                    (\s*/\*+\s+) # search /** in any variants
+                    ([\s/*]+) # search /** in any variants
                     (\\\w+.*)    # take any symbols when tag is appeared
                     """,re.VERBOSE)
                 result = matcher.match(line)
@@ -183,7 +181,7 @@ def main():
                     for i in src:
                         buf.append(i)
                         if "\endcode" in i: break
-                elif re.match(r"\s\*\s+\w+", line2):
+                elif re.match("\s+\*\s+\w+", line2):
                     alignment(buf,line2)
                 else:
                     buf.append(line2)
