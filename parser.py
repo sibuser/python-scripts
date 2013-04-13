@@ -174,7 +174,7 @@ def main():
                 if any(word in line2 for word in tags[0]):
                     tagDescr(buf,line2)
                 elif any(word in line2 for word in tags[1]):
-                    tagArgDescr(buf,line2, 1)
+                    tagArgDescr(buf,line2)
                 elif any(word in line2 for word in tags[2]):
                     tagTwoArgDescr(buf,line2)
                 elif any(word in line2 for word in tags[3]):
