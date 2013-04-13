@@ -3,6 +3,8 @@
 import re
 import sys
 import argparse
+import difflib
+
 def main():
     parser = argparse.ArgumentParser(description="This tool formats the text from \
                                                     the input file and  \
@@ -198,7 +200,11 @@ def main():
             buf.append(line)
     src.close()
 
-    if args.i:
+    if args.p:
+        source = open(args.src,'r').readlines()
+        diff = difflib.unified_diff(source, buf)
+        sys.stdout.writelines(diff)
+    elif args.i:
         # open source file again for writing data.
         src = open(args.src,"w")
         for line in buf:
