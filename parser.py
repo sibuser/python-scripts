@@ -48,7 +48,7 @@ def main():
             firstPart = " * " + result.group(2)
 
             if len(firstPart) < 13:
-                buf.append(firstPart + " " * (amountOfSpaces - len(firstPart))
+                buf.append(firstPart + " " * (amountOfSpaces - len(firstPart)) \
                     + result.group(4) + "\n")
             # if tag and name of argument are longer then 13 char we
             # will add only one space between tag and description.
@@ -80,10 +80,10 @@ def main():
         if result:
             firstPart = " * " + result.group(2) + " " + result.group(4)
             if len(firstPart) < 31:
-                buf.append(firstPart + " " * (amountOfSpaces - len(firstPart))
+                buf.append(firstPart + " " * (amountOfSpaces - len(firstPart)) \
                     + result.group(6) + "\n")
             else:
-                buf.append(firstPart + "\n *" + ' ' * (amountOfSpaces - 2) +
+                buf.append(firstPart + "\n *" + ' ' * (amountOfSpaces - 2) + \
                             result.group(6) + "\n")
         else:
             buf.append(string)
@@ -119,13 +119,13 @@ def main():
             iin_out = (8, 7)[result.group(8) == None]
             arg_name = (10, 5)[result.group(8) == None]
 
-            firstPart = " * " + result.group(2) + " " + result.group(iin_out)
+            firstPart = " * " + result.group(2) + " " + result.group(iin_out) \
             + " " + result.group(arg_name)
             if len(firstPart) > 31:
-                buf.append(firstPart + "\n *" + ' ' * (amountOfSpaces - 2) +
+                buf.append(firstPart + "\n *" + ' ' * (amountOfSpaces - 2) + \
                             result.group(12) + "\n")
             else:
-                buf.append(firstPart + " " * (amountOfSpaces - len(firstPart))
+                buf.append(firstPart + " " * (amountOfSpaces - len(firstPart)) \
                     + result.group(12) + "\n")
         else:
             buf.append(string)
