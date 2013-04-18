@@ -32,7 +32,7 @@ def main():
 
     buf = []
 
-    intend = 1  # for alignment multi string descriptions
+    indent = 1  # for alignment multi string descriptions
 
     """
     * Inserts empty string before
@@ -46,7 +46,8 @@ def main():
     '''
     def tagDescr(buf, string, amountOfSpaces=12):
         # add one empty string between next tag and last string of description
-
+        nonlocal indent
+        indent = 12 # amount spaces between tag and description
         matcher = re.compile(r"""
             (\s\*\s+) # all spaces and asterisks before tag
             (\\\w+)  # tag itself
@@ -67,8 +68,6 @@ def main():
         # if we can not recognize a string we just add without changes
         else:
             buf.append(string)
-        nonlocal intend
-        intend = 10
 
     '''
     * Function searches the string in format:
@@ -78,6 +77,8 @@ def main():
     def tagArgDescr(buf, string, amountOfSpaces=31):
         if '*\n' not in buf[len(buf) - 1]:
             buf.append(' * \n')
+        nonlocal indent
+        indent = 31 # for multi strings description
 
         matcher = re.compile(r"""
             (\s\*\s)    # all spaces and asterisks before tag
@@ -99,8 +100,7 @@ def main():
                             result.group(6) + "\n")
         else:
             buf.append(string)
-        nonlocal intend
-        intend = 29
+
     '''
     Function searches the string in format:
     * \tag [in/out] argument description
@@ -109,6 +109,8 @@ def main():
     def tagTwoArgDescr(buf, string, amountOfSpaces=31):
         if '*\n' not in buf[len(buf) - 1]:
             buf.append(' * \n')
+        nonlocal indent
+        indent = 31
 
         matcher = re.compile(r"""
             (\s\*\s) # all spaces and asterisks before tag
@@ -144,8 +146,8 @@ def main():
         else:
             buf.append(string)
 
-        nonlocal intend
-        intend = 29
+
+
     '''
     Alignments all string of multi string descriptions.
     '''
