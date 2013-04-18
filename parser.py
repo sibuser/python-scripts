@@ -49,8 +49,7 @@ def main():
     * \tag + description
     * and set the indentation upon multi string description.
     '''
-    def tagDescr(buf, string, amountOfSpaces=12):
-        # add one empty string between next tag and last string of description
+    def tagDescr(buf, string, spaces=13):
         nonlocal indent
         indent = 12 # amount spaces between tag and description
         insertLine(buf, string)
@@ -106,15 +105,14 @@ def main():
                     + ' ' * indent + result.group(6) + "\n")
         else:
             buf.append(string)
+        alignment(buf)
 
     '''
     Function searches the string in format:
     * \tag [in/out] argument description
     * and set the indentation upon multi string description.
     '''
-    def tagTwoArgDescr(buf, string, amountOfSpaces=31):
-        if '*\n' not in buf[len(buf) - 1]:
-            buf.append(' * \n')
+    def tagTwoArgDescr(buf, string, spaces=32):
         nonlocal indent
         indent = 31
 
