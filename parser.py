@@ -1,9 +1,46 @@
 #!/usr/bin/env python3
 
 """
-@copyright (c) 2013, Alexey Ulyanov
+\copyright (c) 2013, Alexey Ulyanov
 
 """
+
+
+"""
+The brief description for a class should give a reason for why it exist and when to use it. What is the class good for. It is important that it can stand for itself.
+
+The details description should give a more thoroughly insight into the use cases for the class.
+Provide an example of how to use the class. Add some extra time to this as this code will probably be copy-paste many times.
+
+Specify if the parameter is input [in], output [out] or both [in,out].
+
+The \brief and \details texts should be left aligned at column 13 to get all text aligned, i.e. separate \details from the text with 2 spaces.
+The parameter and return description texts should be left aligned at column 32 to get all description texts aligned, i.e. separate \param from the text with 23 spaces. If the parameter, type and variable name extends past column 32 the description should be placed at column 32 on the row below.
+Between all parameter or return values an empty line should be added.
+Example
+/**
+ * \brief    Brief description.
+ *
+ * \details  Details description \ref refernce.
+ *
+ * \param [in] a_Argunent       Name of input parameter.
+ *
+ * \param [out] a_Result        Name of output parameter.
+ *
+ * \param [in,out] a_VeryLongName
+ *                              Description.
+ *
+ * \return                      Description of a return value
+ *
+ * \code
+ *  Some code here.
+ * \endcode
+
+ */
+Type FunctionName(Type a_Argunent, Type a_Result, Type a_VeryLongName);
+"""
+
+
 
 import re
 import sys
