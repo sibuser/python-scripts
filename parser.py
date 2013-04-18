@@ -221,17 +221,29 @@ def main():
                 buf.append(line)
 
             # 0 \tag + description
-    tags = (('\\brief', '\\note', '\\attention', '\details', '\pre', '\defgroup', '@see'),
+    tags = {'\\brief'    :tagDescr,\
+            '\\note'     :tagDescr,\
+            '\\attention':tagDescr,\
+            '\\warning'  :tagDescr,\
+            '\details'   :tagDescr,\
+            '\pre'       :tagDescr,\
+            '\defgroup'  :tagDescr,\
+            '\deprecated':tagDescr,\
+            '@see'       :tagDescr,\
             # 1 \tag + argument + description
-            ('\\return', '\\returns', '\\retval', '\exception', '\\remark', '@param', \
-                '@return'),
+            '\\return'   :tagArgDescr,\
+            '\\returns'  :tagArgDescr,\
+            '\\retval'   :tagArgDescr,\
+            '\exception' :tagArgDescr,\
+            '\\remark'   :tagArgDescr,\
+            '@return'    :tagArgDescr,\
             # 2 \tag + [in/out] + argument + description
             '\\param'    :tagTwoArgDescr,\
             '@param'     :tagTwoArgDescr,\
              }
 
             # 3 add a unchanged string into buffer
-            ('\code',))
+    stopWords = ('\code', '\endcode', '\*', '*/')
 
     for line in src:
         if "/**" in line:
