@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+"""
+@copyright (c) 2013, Alexey Ulyanov
+
+"""
+
 import re
 import sys
 import argparse
@@ -10,7 +15,7 @@ def main():
     parser = argparse.ArgumentParser(description="This tool formats the text \
                                                     from the input file and  \
                                                     fixes all indentations \
-                                                    in Doxygen \
+                                                    in format of Doxygen \
                                                     documentation. By default \
                                                     result will be printed \
                                                     into output stream")
@@ -29,8 +34,13 @@ def main():
 
     intend = 1  # for alignment multi string descriptions
 
+    """
+    * Inserts empty string before
+    """
+
+
     '''
-    Function searches the string in format:
+    * Function searches the string in format:
     * \tag + description
     * and set the indentation upon multi string description.
     '''
@@ -54,13 +64,14 @@ def main():
             # will add only one space between tag and description.
             else:
                 buf.append(firstPart + " " + result.group(4) + "\n")
+        # if we can not recognize a string we just add without changes
         else:
             buf.append(string)
         nonlocal intend
         intend = 10
 
     '''
-    Function searches the string in format:
+    * Function searches the string in format:
     * \tag + argument + description
     * and set the indentation upon multi string description.
     '''
@@ -77,6 +88,7 @@ def main():
             (.*)        # description
             """, re.VERBOSE)
         result = matcher.match(string)
+
         if result:
             firstPart = " * " + result.group(2) + " " + result.group(4)
             if len(firstPart) < 31:
@@ -117,6 +129,8 @@ def main():
         result = matcher.match(string)
         if result:
             iin_out = (8, 7)[result.group(8) == None]
+            # here we decide which number of group we will use because
+            # you can get arguments in different order
             arg_name = (10, 5)[result.group(8) == None]
 
             firstPart = " * " + result.group(2) + " " + result.group(iin_out) \
