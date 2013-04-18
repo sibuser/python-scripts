@@ -221,22 +221,13 @@ def main():
             buf.append(line)
 
             for line2 in src:
-                if any(word in line2 for word in tags[0]):
-                    tagDescr(buf, line2)
-                elif any(word in line2 for word in tags[1]):
-                    tagArgDescr(buf, line2)
-                elif any(word in line2 for word in tags[2]):
-                    tagTwoArgDescr(buf, line2)
-                elif any(word in line2 for word in tags[3]):
-                    # add all strings into buffer as unchanged
-                    buf.append(line2)
-                    for i in src:
-                        buf.append(i)
-                        if "\endcode" in i:
-                            break
-                elif re.match("\s+\*\s+\w+", line2):
-                    alignment(buf, line2)
-                else:
+                # if "/**" in line2:
+                #     edge = line2.index('*')
+
+                # for each key in dictionary if key in string do call a function
+                [tags[key](buf, line2) for key in tags if key in line2]
+
+                if not any(word in line2 for word in tags):
                     buf.append(line2)
                 if "*/" in line2:
                     break
