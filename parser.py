@@ -155,22 +155,33 @@ def main():
         else:
             buf.append(string)
 
+        alignment(buf)
 
 
     '''
     Alignments all string of multi string descriptions.
     '''
-    def alignment(buf, string):
-        matcher = re.compile(r"""
-            (\s+\*\s+)    # all spaces and asterisks before description
-            (.+)          # description
-            """, re.VERBOSE)
-        result = matcher.match(string)
+    def alignment(buf):
+        for line in src:
+            if any(word in line for word in stopWords):
+                buf.append(line)
+                break
 
-        if result:
-            buf.append(" *" + " " * intend + result.group(2) + "\n")
-        else:
-            buf.append(string)
+            if any(word in line for word in tags):
+                [tags[key](buf, line) for key in tags if key in line]
+                break
+
+            matcher = re.compile(r"""
+                (\s+)      # all spaces before asterisks
+                (\*?\s+)    # all spaces and asterisks before description
+                (.+)       # description
+                """, re.VERBOSE)
+            result = matcher.match(line)
+
+            if result:
+                buf.append(' ' * edge + "*" + " " * indent + result.group(3) + "\n")
+            else:
+                buf.append(line)
 
             # 0 \tag + description
     tags = (('\\brief', '\\note', '\\attention', '\details', '\pre'),
