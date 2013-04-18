@@ -184,11 +184,8 @@ def main():
                 buf.append(' ' * edge + tagArg + " " * (spaces - len(tagArg)) \
                     + result.group(12) + "\n")
             else:
-                    buf.append(' ' * edge + tagArg + "\n" + (" " * edge) + "*" + (' ' * spaces) + \
+                buf.append(' ' * edge + tagArg + "\n" + (" " * edge) + "*" + (' ' * spaces) + \
                             result.group(12) + "\n")
-            else:
-                buf.append(firstPart + " " * (amountOfSpaces - len(firstPart)) \
-                    + result.group(12) + "\n")
         else:
             buf.append(string)
 
@@ -270,8 +267,8 @@ def main():
             buf.append(line)
 
             for line2 in src:
-                # if "/**" in line2:
-                #     edge = line2.index('*')
+                if "/**" in line2:
+                    edge = line2.index('*')
 
                 # for each key in dictionary if key in string do call a function
                 [tags[key](buf, line2) for key in tags if key in line2]
