@@ -40,13 +40,10 @@ Example
 Type FunctionName(Type a_Argunent, Type a_Result, Type a_VeryLongName);
 """
 
-
-
 import re
 import sys
 import argparse
 import difflib
-
 
 def main():
     parser = argparse.ArgumentParser(description="This tool formats the text \
@@ -66,7 +63,7 @@ def main():
     args = parser.parse_args()
 
     src = open(args.src, "r+")
-
+    # multiDescr = False # we need to know where we found a string
     buf = []
 
     indent = 1  # for alignment multi string descriptions
@@ -79,7 +76,7 @@ def main():
     def insertLine(buf, string):
         if '*\n' not in buf[-1] and  \
              '/**' not in buf[-1]:
-           buf.append(' ' * edge + '*\n')
+            buf.append(' ' * edge + '*\n')
 
     '''
     * Function searches the string in format:
@@ -90,6 +87,7 @@ def main():
         nonlocal indent
         indent = 12 # amount spaces between tag and description
         insertLine(buf, string)
+
         matcher = re.compile(r"""
             ([\s*\s]*) # all spaces and asterisks before tag
             ([@\\]+\w+|[.*])  # tag itself
@@ -97,6 +95,7 @@ def main():
             (.*)     # description
             """, re.VERBOSE)
         result = matcher.match(string)
+
         if result:
             firstPart = ' ' * edge + "* " + result.group(2)
             if len("* " + result.group(2)) < 13:
@@ -106,10 +105,11 @@ def main():
             # will add only one space between tag and description.
             else:
                 buf.append(firstPart + " " + result.group(4) + "\n")
-        # if we can not recognize a string we just add without changes
+        # if we could not recognize a string we just add without changes
         else:
             buf.append(string)
         alignment(buf)
+
 
     '''
     * Function searches the string in format:
