@@ -184,11 +184,15 @@ def main():
                 buf.append(line)
 
             # 0 \tag + description
-    tags = (('\\brief', '\\note', '\\attention', '\details', '\pre'),
+    tags = (('\\brief', '\\note', '\\attention', '\details', '\pre', '\defgroup', '@see'),
             # 1 \tag + argument + description
-            ('\\return', '\\retval', '\exception', '\\remark'),
+            ('\\return', '\\returns', '\\retval', '\exception', '\\remark', '@param', \
+                '@return'),
             # 2 \tag + [in/out] + argument + description
-            ('\\param',),
+            '\\param'    :tagTwoArgDescr,\
+            '@param'     :tagTwoArgDescr,\
+             }
+
             # 3 add a unchanged string into buffer
             ('\code',))
 
