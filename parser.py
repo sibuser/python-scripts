@@ -55,8 +55,8 @@ def main():
         indent = 12 # amount spaces between tag and description
         insertLine(buf, string)
         matcher = re.compile(r"""
-            (\s\*\s+) # all spaces and asterisks before tag
-            (\\\w+)  # tag itself
+            ([\s*\s]*) # all spaces and asterisks before tag
+            ([@\\]+\w+|[.*])  # tag itself
             (\s+)    # all spaces between tag and description
             (.*)     # description
             """, re.VERBOSE)
@@ -73,25 +73,24 @@ def main():
         # if we can not recognize a string we just add without changes
         else:
             buf.append(string)
+        alignment(buf)
 
     '''
     * Function searches the string in format:
     * \tag + argument + description
     * and set the indentation upon multi string description.
     '''
-    def tagArgDescr(buf, string, amountOfSpaces=31):
-        if '*\n' not in buf[len(buf) - 1]:
-            buf.append(' * \n')
+    def tagArgDescr(buf, string, spaces=31):
         nonlocal indent
         indent = 31 # for multi strings description
 
         insertLine(buf, string)
         matcher = re.compile(r"""
-            (\s\*\s)    # all spaces and asterisks before tag
-            (\\\w+)     # tag itself
+            (\s+\*\s+)  # all spaces and asterisks before tag
+            ([@\\]\w+)  # tag itself
             (\s+)       # all spaces
             (\w+)       # name of argument
-            (\s+)       # all spaces between tag and description
+            (\s+)       # all spaces between argument and description
             (.*)        # description
             """, re.VERBOSE)
         result = matcher.match(string)
@@ -121,19 +120,19 @@ def main():
 
         insertLine(buf, string)
         matcher = re.compile(r"""
-            (\s\*\s) # all spaces and asterisks before tag
-            (\\\w+)  # tag
-            (\s+)    # spaces between tag and argument
+            (\s+\*\s+)    # all spaces and asterisks before tag
+            ([@\\]\w+)    # tag
+            (\s+)         # spaces between tag and argument
             (
-                (\w+)    # name of argument
-                (\s+)    # spaces
+                (\w+)     # name of argument
+                (\s+)     # spaces
                 (\[.+\])| # might be [any word]
                 (\[.+\])  # might be [any word]
-                (\s+)    # spaces
-                (\w+)    # name of argument
+                (\s+)     # spaces
+                (\w+)     # name of argument
             )
             (\s+)    # all spaces between tag and description
-            (.*)     # description
+            (\w.*)     # description
             """, re.VERBOSE)
 
         result = matcher.match(string)
