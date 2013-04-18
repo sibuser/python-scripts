@@ -33,11 +33,16 @@ def main():
     buf = []
 
     indent = 1  # for alignment multi string descriptions
+    edge = 0    # alignment from the left edge
 
     """
     * Inserts empty string before
     """
 
+    def insertLine(buf, string):
+        if '*\n' not in buf[-1] and  \
+             '/**' not in buf[-1]:
+           buf.append(' ' * edge + '*\n')
 
     '''
     * Function searches the string in format:
@@ -48,6 +53,7 @@ def main():
         # add one empty string between next tag and last string of description
         nonlocal indent
         indent = 12 # amount spaces between tag and description
+        insertLine(buf, string)
         matcher = re.compile(r"""
             (\s\*\s+) # all spaces and asterisks before tag
             (\\\w+)  # tag itself
@@ -56,10 +62,9 @@ def main():
             """, re.VERBOSE)
         result = matcher.match(string)
         if result:
-            firstPart = " * " + result.group(2)
-
-            if len(firstPart) < 13:
-                buf.append(firstPart + " " * (amountOfSpaces - len(firstPart)) \
+            firstPart = ' ' * edge + "* " + result.group(2)
+            if len("* " + result.group(2)) < 13:
+                buf.append(firstPart + " " * (spaces - len("* " + result.group(2))) \
                     + result.group(4) + "\n")
             # if tag and name of argument are longer then 13 char we
             # will add only one space between tag and description.
@@ -80,6 +85,7 @@ def main():
         nonlocal indent
         indent = 31 # for multi strings description
 
+        insertLine(buf, string)
         matcher = re.compile(r"""
             (\s\*\s)    # all spaces and asterisks before tag
             (\\\w+)     # tag itself
@@ -91,13 +97,14 @@ def main():
         result = matcher.match(string)
 
         if result:
-            firstPart = " * " + result.group(2) + " " + result.group(4)
-            if len(firstPart) < 31:
-                buf.append(firstPart + " " * (amountOfSpaces - len(firstPart)) \
-                    + result.group(6) + "\n")
+            tagArg = "* " + result.group(2) + " " + result.group(4)
+
+            if len(tagArg) < spaces: # spaces are between argument and description
+                buf.append(' ' * edge + tagArg + " " * (spaces - len(tagArg) + 1) + \
+                    result.group(6) + "\n")
             else:
-                buf.append(firstPart + "\n *" + ' ' * (amountOfSpaces - 2) + \
-                            result.group(6) + "\n")
+                buf.append(' ' * edge + tagArg + "\n" + " " * edge + "*" \
+                    + ' ' * indent + result.group(6) + "\n")
         else:
             buf.append(string)
 
@@ -112,6 +119,7 @@ def main():
         nonlocal indent
         indent = 31
 
+        insertLine(buf, string)
         matcher = re.compile(r"""
             (\s\*\s) # all spaces and asterisks before tag
             (\\\w+)  # tag
@@ -130,15 +138,19 @@ def main():
 
         result = matcher.match(string)
         if result:
-            iin_out = (8, 7)[result.group(8) == None]
             # here we decide which number of group we will use because
             # you can get arguments in different order
+            in_out = (8, 7)[result.group(8) == None]
             arg_name = (10, 5)[result.group(8) == None]
 
-            firstPart = " * " + result.group(2) + " " + result.group(iin_out) \
-            + " " + result.group(arg_name)
-            if len(firstPart) > 31:
-                buf.append(firstPart + "\n *" + ' ' * (amountOfSpaces - 2) + \
+            tagArg = "* " + result.group(2) + " " + result.group(in_out) \
+                        + " " + result.group(arg_name)
+
+            if len(tagArg) < 32:
+                buf.append(' ' * edge + tagArg + " " * (spaces - len(tagArg)) \
+                    + result.group(12) + "\n")
+            else:
+                    buf.append(' ' * edge + tagArg + "\n" + (" " * edge) + "*" + (' ' * spaces) + \
                             result.group(12) + "\n")
             else:
                 buf.append(firstPart + " " * (amountOfSpaces - len(firstPart)) \
@@ -176,19 +188,25 @@ def main():
         if "/**" in line:
             # if first string of comments contains anything except /**
             # we will split it on two strings.
-            if len(line) > 4:
-                matcher = re.compile(r"""
-                    ([\s/*]+) # search /** in any variants
-                    (\\\w+.*)    # take any symbols when tag is appeared
-                    """, re.VERBOSE)
-                result = matcher.match(line)
-                if result:
-                    buf.append('/**\n')
-                    tagDescr(buf, ' * ' + result.group(2))
-                else:
-                    buf.append(line)
-            else:
-                buf.append(line)
+
+            # count how many spaces we need to put between left edge and first
+            # asterisk
+            edge = line.index('*')
+
+            # if len(re.search(r'([\s/*]+)([\\]?\w+.*)', line).group(2)) > 4 and '*/' not in line:
+            #     matcher = re.compile(r"""
+            #         ([\s/*]+)    # search any variants of /**
+            #         ([\\]?\w+.*)    # take any symbols when tag is appeared
+            #         """, re.VERBOSE)
+            #     result = matcher.match(line)
+            #     if result:
+            #         buf.append((' ' * (edge - 2)) + '/**\n' + \
+            #             (' ' * edge) + '* ' + result.group(2))
+            #         # tagDescr(buf, '* ' + result.group(2))
+            #     else:
+            #         buf.append(line)
+            # else:
+            buf.append(line)
 
             for line2 in src:
                 if any(word in line2 for word in tags[0]):
