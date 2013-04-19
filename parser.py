@@ -74,8 +74,7 @@ def main():
     """
 
     def insertLine(buf, string):
-        if '*\n' not in buf[-1] and  \
-             '/**' not in buf[-1]:
+        if '/**' and '*\n'  not in buf[-1]:
             buf.append(' ' * edge + '*\n')
 
     '''
