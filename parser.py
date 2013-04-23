@@ -4,7 +4,7 @@
 \copyright (c) 2013, Alexey Ulyanov
 
 """
-
+# find . -type f -name '*.hh' -exec parser.py -i {} \;
 
 """
 The brief description for a class should give a reason for why it exist and when to use it. What is the class good for. It is important that it can stand for itself.
@@ -45,14 +45,15 @@ import sys
 import argparse
 import difflib
 
+
 def main():
-    parser = argparse.ArgumentParser(description="This tool formats the text \
-                                                    from the input file and  \
-                                                    fixes all indentations \
-                                                    in format of Doxygen \
-                                                    documentation. By default \
-                                                    result will be printed \
-                                                    into output stream")
+    parser = argparse.ArgumentParser(description="""This tool formats the text
+                                                    from the input file and
+                                                    fixes all indentations
+                                                    in format of Doxygen
+                                                    documentation. By default
+                                                    result will be printed
+                                                    into output stream""")
 
     parser.add_argument("-i", help="overwrites the original file",
                         action="store_true", default=False)
@@ -74,7 +75,7 @@ def main():
     """
 
     def insertLine(buf, string):
-        if '/**' and '*\n'  not in buf[-1]:
+        if '/**' and '*\n' not in buf[-1]:
             buf.append(' ' * edge + '*\n')
 
     '''
@@ -84,11 +85,11 @@ def main():
     '''
     def tagDescr(buf, string, spaces=13):
         nonlocal indent
-        indent = 12 # amount spaces between tag and description
+        indent = 12  # amount spaces between tag and description
         insertLine(buf, string)
 
         matcher = re.compile(r"""
-            ([\s*\s]*) # all spaces and asterisks before tag
+            ([\s*]*) # all spaces and asterisks before tag
             ([@\\]+\w+|[.*])  # tag itself
             (\s+)    # all spaces between tag and description
             (.*)     # description
@@ -98,8 +99,8 @@ def main():
         if result:
             firstPart = ' ' * edge + "* " + result.group(2)
             if len("* " + result.group(2)) < 13:
-                buf.append(firstPart + " " * (spaces - len("* " + result.group(2))) \
-                    + result.group(4) + "\n")
+                buf.append(firstPart + " " * (spaces - len("* " +
+                            result.group(2))) + result.group(4) + "\n")
             # if tag and name of argument are longer then 13 char we
             # will add only one space between tag and description.
             else:
@@ -109,7 +110,6 @@ def main():
             buf.append(string)
         alignment(buf)
 
-
     '''
     * Function searches the string in format:
     * \tag + argument + description
@@ -117,7 +117,7 @@ def main():
     '''
     def tagArgDescr(buf, string, spaces=31):
         nonlocal indent
-        indent = 31 # for multi strings description
+        indent = 31  # for multi strings description
 
         insertLine(buf, string)
         matcher = re.compile(r"""
@@ -133,11 +133,11 @@ def main():
         if result:
             tagArg = "* " + result.group(2) + " " + result.group(4)
 
-            if len(tagArg) < spaces: # spaces are between argument and description
-                buf.append(' ' * edge + tagArg + " " * (spaces - len(tagArg) + 1) + \
-                    result.group(6) + "\n")
+            if len(tagArg) < spaces:  # spaces between argument and description
+                buf.append(' ' * edge + tagArg + " " *
+                    (spaces - len(tagArg) + 1) + result.group(6) + "\n")
             else:
-                buf.append(' ' * edge + tagArg + "\n" + " " * edge + "*" \
+                buf.append(' ' * edge + tagArg + "\n" + " " * edge + "*"
                     + ' ' * indent + result.group(6) + "\n")
         else:
             buf.append(string)
@@ -173,23 +173,22 @@ def main():
         if result:
             # here we decide which number of group we will use because
             # you can get arguments in different order
-            in_out = (8, 7)[result.group(8) == None]
-            arg_name = (10, 5)[result.group(8) == None]
+            in_out = (8, 7)[result.group(8) is None]
+            arg_name = (10, 5)[result.group(8) is None]
 
             tagArg = "* " + result.group(2) + " " + result.group(in_out) \
-                        + " " + result.group(arg_name)
+                    + " " + result.group(arg_name)
 
             if len(tagArg) < 32:
-                buf.append(' ' * edge + tagArg + " " * (spaces - len(tagArg)) \
+                buf.append(' ' * edge + tagArg + " " * (spaces - len(tagArg))
                     + result.group(12) + "\n")
             else:
-                buf.append(' ' * edge + tagArg + "\n" + (" " * edge) + "*" + (' ' * spaces) + \
-                            result.group(12) + "\n")
+                buf.append(' ' * edge + tagArg + "\n" + (" " * edge) + "*" +
+                    (' ' * spaces) + result.group(12) + "\n")
         else:
             buf.append(string)
 
         alignment(buf)
-
 
     '''
     Alignments all string of multi string descriptions.
@@ -205,8 +204,8 @@ def main():
                 break
 
             matcher = re.compile(r"""
-                (\s+)      # all spaces before asterisks
-                (\*?\s+)    # all spaces and asterisks before description
+                (\s*)      # all spaces before asterisks
+                (\*+\s+)    # all spaces and asterisks before description
                 (.+)       # description
                 """, re.VERBOSE)
             result = matcher.match(line)
@@ -217,29 +216,34 @@ def main():
                 buf.append(line)
 
             # 0 \tag + description
-    tags = {'\\brief'    :tagDescr,\
-            '\\note'     :tagDescr,\
-            '\\attention':tagDescr,\
-            '\\warning'  :tagDescr,\
-            '\details'   :tagDescr,\
-            '\pre'       :tagDescr,\
-            '\defgroup'  :tagDescr,\
-            '\deprecated':tagDescr,\
-            '@see'       :tagDescr,\
+    tags = {'\\brief'    : tagDescr,
+            '\\note'     : tagDescr,
+            '\\note'     : tagDescr,
+            '\\attention': tagDescr,
+            '\\warning'  : tagDescr,
+            '\details'   : tagDescr,
+            '\pre'       : tagDescr,
+            '\defgroup'  : tagDescr,
+            '\deprecated': tagDescr,
+            '@see'       : tagDescr,
+            '\copyright' : tagDescr,
+            '\\author'   : tagDescr,
+            '@author'    : tagDescr,
             # 1 \tag + argument + description
-            '\\return'   :tagArgDescr,\
-            '\\returns'  :tagArgDescr,\
-            '\\retval'   :tagArgDescr,\
-            '\exception' :tagArgDescr,\
-            '\\remark'   :tagArgDescr,\
-            '@return'    :tagArgDescr,\
+            '\\return'   : tagArgDescr,
+            'args['      : tagArgDescr,
+            '\\return'   : tagArgDescr,
+            '\\retval'   : tagArgDescr,
+            '\exception' : tagArgDescr,
+            '\\remark'   : tagArgDescr,
+            '@return'    : tagArgDescr,
             # 2 \tag + [in/out] + argument + description
-            '\\param'    :tagTwoArgDescr,\
-            '@param'     :tagTwoArgDescr,\
-             }
+            '\\param'    : tagTwoArgDescr,
+            '@param'     : tagTwoArgDescr
+            }
 
             # 3 add a unchanged string into buffer
-    stopWords = ('\code', '\endcode', '\*', '*/')
+    stopWords = ('\code', '\endcode', '\*', '*/', '*\n')
 
     for line in src:
         if "/**" in line:
@@ -250,7 +254,8 @@ def main():
             # asterisk
             edge = line.index('*')
 
-            # if len(re.search(r'([\s/*]+)([\\]?\w+.*)', line).group(2)) > 4 and '*/' not in line:
+            # if len(re.search(r'([\s/*]+)([\\]?\w+.*)', line).group(2)) > 4
+            # and '*/' not in line:
             #     matcher = re.compile(r"""
             #         ([\s/*]+)    # search any variants of /**
             #         ([\\]?\w+.*)    # take any symbols when tag is appeared
@@ -269,7 +274,8 @@ def main():
                 if "/**" in line2:
                     edge = line2.index('*')
 
-                # for each key in dictionary if key in string do call a function
+                # for each key in dictionary if key is in a string
+                # do call a function
                 [tags[key](buf, line2) for key in tags if key in line2]
 
                 if not any(word in line2 for word in tags):
