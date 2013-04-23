@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-\copyright (c) 2013, Alexey Ulyanov
+\copyright (c) 2013, Alexey Ulyanov <sibuser.nsk@gmail.com>
 
 """
 # find . -type f -name '*.hh' -exec parser.py -i {} \;
