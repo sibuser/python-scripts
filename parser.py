@@ -75,10 +75,28 @@ def main():
     """
 
     def insertLine(buf, string):
-        if '/**' and '*\n' not in buf[-1]:
-            buf.append(' ' * edge + '*\n')
         if '*\n' in buf[-1] and '/**' not in buf[-1]:
             buf[-1] = (' ' * edge + '*\n')
+        if '/**' and '*\n' not in buf[-1]:
+            buf.append(' ' * edge + '*\n')
+
+    '''
+    * Function fixes all indentations for strings
+    * which don't match to any regExpr.
+    '''
+    def leftIndent(string):
+        nonlocal buf
+        matcher = re.compile(r"""
+            (\s*\*) # all spaces and asterisks before tag
+            (.*)  # tag itself
+            """, re.VERBOSE)
+        result = matcher.match(string)
+
+        if result:
+            buf.append(' ' * edge + "*" + result.group(2) + "\n")
+        else:
+            buf.append(string)
+
 
     '''
     * Function searches the string in format:
@@ -198,7 +216,7 @@ def main():
     def alignment(buf):
         for line in src:
             if any(word in line for word in stopWords):
-                buf.append(line)
+                leftIndent(line)
                 break
 
             if any(word in line for word in tags):
@@ -231,13 +249,13 @@ def main():
             '\copyright' : tagDescr,
             '\\author'   : tagDescr,
             '@author'    : tagDescr,
+            '\\remark'   : tagDescr,
             # 1 \tag + argument + description
             '\\return'   : tagArgDescr,
             'args['      : tagArgDescr,
             '\\return'   : tagArgDescr,
             '\\retval'   : tagArgDescr,
             '\exception' : tagArgDescr,
-            '\\remark'   : tagArgDescr,
             '@return'    : tagArgDescr,
             # 2 \tag + [in/out] + argument + description
             '\\param'    : tagTwoArgDescr,
@@ -281,7 +299,7 @@ def main():
                 [tags[key](buf, line2) for key in tags if key in line2]
 
                 if not any(word in line2 for word in tags):
-                    buf.append(line2)
+                    leftIndent(line2)
                 if "*/" in line2:
                     break
         else:
