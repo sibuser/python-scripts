@@ -77,6 +77,8 @@ def main():
     def insertLine(buf, string):
         if '/**' and '*\n' not in buf[-1]:
             buf.append(' ' * edge + '*\n')
+        if '*\n' in buf[-1] and '/**' not in buf[-1]:
+            buf[-1] = (' ' * edge + '*\n')
 
     '''
     * Function searches the string in format:
@@ -121,7 +123,7 @@ def main():
 
         insertLine(buf, string)
         matcher = re.compile(r"""
-            (\s+\*\s+)  # all spaces and asterisks before tag
+            ([\s*]*)  # all spaces and asterisks before tag
             ([@\\]\w+)  # tag itself
             (\s+)       # all spaces
             (\w+)       # name of argument
@@ -154,7 +156,7 @@ def main():
 
         insertLine(buf, string)
         matcher = re.compile(r"""
-            (\s+\*\s+)    # all spaces and asterisks before tag
+            ([\s*]*)    # all spaces and asterisks before tag
             ([@\\]\w+)    # tag
             (\s+)         # spaces between tag and argument
             (
