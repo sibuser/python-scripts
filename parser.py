@@ -91,7 +91,7 @@ def main():
         insertLine(buf, string)
 
         matcher = re.compile(r"""
-            ([\s*]*) # all spaces and asterisks before tag
+            ([ *]*) # all spaces and asterisks before tag
             ([@\\]+\w+|[.*])  # tag itself
             (\s+)    # all spaces between tag and description
             (.*)     # description
@@ -123,7 +123,7 @@ def main():
 
         insertLine(buf, string)
         matcher = re.compile(r"""
-            ([\s*]*)  # all spaces and asterisks before tag
+            ([ *]*)  # all spaces and asterisks before tag
             ([@\\]\w+)  # tag itself
             (\s+)       # all spaces
             (\w+)       # name of argument
@@ -156,22 +156,23 @@ def main():
 
         insertLine(buf, string)
         matcher = re.compile(r"""
-            ([\s*]*)    # all spaces and asterisks before tag
+            ([ *]*)    # all spaces and asterisks before tag
             ([@\\]\w+)    # tag
             (\s+)         # spaces between tag and argument
             (
                 (\w+)     # name of argument
                 (\s+)     # spaces
-                (\[.+\])| # might be [any word]
-                (\[.+\])  # might be [any word]
+                (\[\w+\])| # might be [any word]
+                (\[\w+\])  # might be [any word]
                 (\s+)     # spaces
                 (\w+)     # name of argument
             )
             (\s+)    # all spaces between tag and description
-            (\w.*)     # description
+            (.+)     # description
             """, re.VERBOSE)
 
         result = matcher.match(string)
+        print(result.groups())
         if result:
             # here we decide which number of group we will use because
             # you can get arguments in different order
@@ -186,7 +187,7 @@ def main():
                     + result.group(12) + "\n")
             else:
                 buf.append(' ' * edge + tagArg + "\n" + (" " * edge) + "*" +
-                    (' ' * spaces) + result.group(12) + "\n")
+                    (' ' * (spaces - 1)) + result.group(12) + "\n")
         else:
             buf.append(string)
 
@@ -230,6 +231,7 @@ def main():
             '@see'       : tagDescr,
             '\copyright' : tagDescr,
             '\\author'   : tagDescr,
+            '\\throw'   : tagDescr,
             '@author'    : tagDescr,
             # 1 \tag + argument + description
             '\\return'   : tagArgDescr,
