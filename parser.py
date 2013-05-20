@@ -162,8 +162,8 @@ def main():
             (
                 (\w+)     # name of argument
                 (\s+)     # spaces
-                (\[\w+\])| # might be [any word]
-                (\[\w+\])  # might be [any word]
+                (\[[a-z,]+\])| # might be [any word]
+                (\[[a-z,]+\])  # might be [any word]
                 (\s+)     # spaces
                 (\w+)     # name of argument
             )
