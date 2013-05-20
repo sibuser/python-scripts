@@ -172,7 +172,7 @@ def main():
             """, re.VERBOSE)
 
         result = matcher.match(string)
-        print(result.groups())
+
         if result:
             # here we decide which number of group we will use because
             # you can get arguments in different order
