@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 """
 \copyright (c) 2013, Alexey Ulyanov <sibuser.nsk@gmail.com>
@@ -67,7 +67,7 @@ def main():
     # multiDescr = False # we need to know where we found a string
     buf = []
 
-    indent = 1  # for alignment multi string descriptions
+    indent = {"i": 1}  # for alignment multi string descriptions
     edge = 0    # alignment from the left edge
 
     """
@@ -84,8 +84,7 @@ def main():
     * Function fixes all indentations for strings
     * which don't match to any regExpr.
     '''
-    def leftIndent(string):
-        nonlocal buf
+    def leftIndent(string, buf):
         matcher = re.compile(r"""
             (\s*\*) # all spaces and asterisks before tag
             (.*)  # tag itself
@@ -104,8 +103,7 @@ def main():
     * and set the indentation upon multi string description.
     '''
     def tagDescr(buf, string, spaces=13):
-        nonlocal indent
-        indent = 12  # amount spaces between tag and description
+        indent["i"] = 12  # amount spaces between tag and description
         insertLine(buf, string)
 
         matcher = re.compile(r"""
@@ -136,8 +134,7 @@ def main():
     * and set the indentation upon multi string description.
     '''
     def tagArgDescr(buf, string, spaces=31):
-        nonlocal indent
-        indent = 31  # for multi strings description
+        indent["i"] = 31  # for multi strings description
 
         insertLine(buf, string)
         matcher = re.compile(r"""
@@ -158,7 +155,7 @@ def main():
                     (spaces - len(tagArg) + 1) + result.group(6) + "\n")
             else:
                 buf.append(' ' * edge + tagArg + "\n" + " " * edge + "*"
-                    + ' ' * indent + result.group(6) + "\n")
+                    + ' ' * indent["i"] + result.group(6) + "\n")
         else:
             buf.append(string)
         alignment(buf)
@@ -169,8 +166,7 @@ def main():
     * and set the indentation upon multi string description.
     '''
     def tagTwoArgDescr(buf, string, spaces=32):
-        nonlocal indent
-        indent = 31
+        indent["i"] = 31
 
         insertLine(buf, string)
         matcher = re.compile(r"""
@@ -217,7 +213,7 @@ def main():
     def alignment(buf):
         for line in src:
             if any(word in line for word in stopWords):
-                leftIndent(line)
+                leftIndent(line, buf)
                 break
 
             if any(word in line for word in tags):
@@ -232,7 +228,7 @@ def main():
             result = matcher.match(line)
 
             if result:
-                buf.append(' ' * edge + "*" + " " * indent + result.group(3) + "\n")
+                buf.append(' ' * edge + "*" + " " * indent["i"] + result.group(3) + "\n")
             else:
                 buf.append(line)
 
@@ -301,7 +297,7 @@ def main():
                 [tags[key](buf, line2) for key in tags if key in line2]
 
                 if not any(word in line2 for word in tags):
-                    leftIndent(line2)
+                    leftIndent(line2, buf)
                 if "*/" in line2:
                     break
         else:
