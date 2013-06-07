@@ -45,6 +45,30 @@ import sys
 import argparse
 import difflib
 
+class Wrapper():
+    def __init__(self, fileName):
+        self.f = open(fileName)
+        self.buff = None
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        if self.buff:
+            temp = self.buff
+            self.buff = None
+            return temp
+
+        line = next(self.f)
+        if not line:
+            raise StopIteration('dfdf')
+        return line
+
+    def push(self, line):
+        self.buff = line
+
+    def close(self):
+        self.f.close()
 
 def main():
     parser = argparse.ArgumentParser(description="""This tool formats the text
@@ -63,8 +87,8 @@ def main():
     parser.add_argument("-dst", help="saves result into file")
     args = parser.parse_args()
 
-    src = open(args.src, "r+")
-    # multiDescr = False # we need to know where we found a string
+    src = Wrapper(args.src)
+
     buf = []
 
     indent = {"i": 1}  # for alignment multi string descriptions
@@ -217,7 +241,7 @@ def main():
                 break
 
             if any(word in line for word in tags):
-                [tags[key](buf, line) for key in tags if key in line]
+                src.push(line)
                 break
 
             matcher = re.compile(r"""
@@ -260,7 +284,7 @@ def main():
             '@param'     : tagTwoArgDescr
             }
 
-            # 3 add a unchanged string into buffer
+            # add a unchanged string into buffer
     stopWords = ('\code', '\endcode', '\*', '*/', '*\n')
 
     for line in src:
@@ -272,20 +296,6 @@ def main():
             # asterisk
             edge = line.index('*')
 
-            # if len(re.search(r'([\s/*]+)([\\]?\w+.*)', line).group(2)) > 4
-            # and '*/' not in line:
-            #     matcher = re.compile(r"""
-            #         ([\s/*]+)    # search any variants of /**
-            #         ([\\]?\w+.*)    # take any symbols when tag is appeared
-            #         """, re.VERBOSE)
-            #     result = matcher.match(line)
-            #     if result:
-            #         buf.append((' ' * (edge - 2)) + '/**\n' + \
-            #             (' ' * edge) + '* ' + result.group(2))
-            #         # tagDescr(buf, '* ' + result.group(2))
-            #     else:
-            #         buf.append(line)
-            # else:
             buf.append(line)
 
             for line2 in src:
