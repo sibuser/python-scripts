@@ -129,6 +129,9 @@ def main():
     def tagDescr(buf, string, spaces=13):
         indent["i"] = 12  # amount spaces between tag and description
         insertLine(buf, string)
+        if '\\return' in string or '@return' in string:
+            print string
+            spaces = 32
 
         matcher = re.compile(r"""
             ([ *]*) # all spaces and asterisks before tag
@@ -269,16 +272,15 @@ def main():
             '@see'       : tagDescr,
             '\copyright' : tagDescr,
             '\\author'   : tagDescr,
-            '\\throw'   : tagDescr,
+            '\\throw'    : tagDescr,
             '@author'    : tagDescr,
             '\\remark'   : tagDescr,
+            '@return'    : tagDescr,
+            '\\return'   : tagDescr,
             # 1 \tag + argument + description
-            '\\return'   : tagArgDescr,
             'args['      : tagArgDescr,
-            '\\return'   : tagArgDescr,
             '\\retval'   : tagArgDescr,
             '\exception' : tagArgDescr,
-            '@return'    : tagArgDescr,
             # 2 \tag + [in/out] + argument + description
             '\\param'    : tagTwoArgDescr,
             '@param'     : tagTwoArgDescr
