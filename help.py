@@ -5,14 +5,14 @@ import sys
 import os
 import commands
 
-help_path = os.environ['HOME'] + '/tmp/help'
+help_path = os.environ['HOME'] + '/help'
 
 
 def install():
     if not os.path.isdir(help_path):
         os.mkdir(help_path)
 
-    with open(help_path + '/my_first_file', 'w') as f:
+    with open(help_path + '/my_first_note', 'w') as f:
         f.write('Congratulations! This is your first note.\n'
                 'Now you can use it.\n')
 
@@ -46,13 +46,12 @@ def he():
     for arg in sys.argv[1:]:
         files = files + ' -a -name "*' + arg + '*"'
 
-    result = commands.getoutput('find -L ~/tmp/help ' + files + '| grep -v \"~$\" | grep -v \".git/\"'
+    result = commands.getoutput('find -L ~/help ' + files + '| grep -v \"~$\" | grep -v \".git/\"'
                                                                 '| grep -v \"deleted\"')
     if result == '':
         print('Nothing was found')
     else:
-        print(result)
-        os.system('less ' + result + ' 2> /dev/null')
+        os.system('less ' + ' '.join(result.strip().split()))
 
 
 def main():
