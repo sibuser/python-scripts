@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-
+__email__ = 'sibuser.nsk@gmail.com'
 __author__ = 'sibuser'
+
 import sys
 import os
 import commands
