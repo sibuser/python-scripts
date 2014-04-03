@@ -17,10 +17,12 @@ def install():
     """
     if not os.path.isdir(help_path):
         os.mkdir(help_path)
+        print('The help folder has been created at ', help_path)
 
     with open(help_path + '/my_first_note', 'w') as f:
         f.write('Congratulations! This is your first note.\n'
                 'Now you can use it.\n')
+        print('The first note has been created')
 
     with open(os.environ['HOME'] + '/.lesskey', 'w') as lesskey:
         lesskey.write("""\tx         quit
@@ -30,6 +32,8 @@ def install():
        \eOC        next-file
        \eOD        prev-file""")
     os.system('lesskey ' + os.environ['HOME'] + '/.lesskey')
+    print('Navigation keys for less has been redefined and to navigate\n',
+          'through files you can use left and right arrows instead of :n and :p')
 
 
 def update():
@@ -83,6 +87,7 @@ if __name__ == '__main__':
                              'do you want to continue?[Y/n]')
         if filename == 'Yes' or filename == 'yes' or filename == '':
             install()
+            sys.exit(0)
         else:
             sys.exit(1)
     find_files()
