@@ -8,7 +8,7 @@ import commands
 
 help_path = os.environ['HOME'] + '/help'
 info_message = '\033[1;32mINFO:\033[1;m '
-error_message = '\033[1;31mINFO:\033[1;m '
+error_message = '\033[1;31mERROR:\033[1;m '
 def install():
     """
     Creates a help folder in your home directory with one file as an example.
