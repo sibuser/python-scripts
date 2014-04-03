@@ -5,6 +5,7 @@ __author__ = 'sibuser'
 import sys
 import os
 import commands
+import subprocess
 
 help_path = os.environ['HOME'] + '/help'
 info_message = '\033[1;32mINFO:\033[1;m '
@@ -26,18 +27,18 @@ def install():
         f.write('Congratulations! This is your first note.\n'
                 'Now you can use it.\n')
         print(info_message + 'The first note has been created \'my_first_note\'')
+    if os.name == 'posix':
+        with open(os.environ['HOME'] + '/.lesskey', 'w') as lesskey:
+            lesskey.write("""\tx         quit
+                X         quit
+               \e[C        next-file
+               \e[D        prev-file
+               \eOC        next-file
+               \eOD        prev-file""")
 
-    with open(os.environ['HOME'] + '/.lesskey', 'w') as lesskey:
-        lesskey.write("""\tx         quit
-        X         quit
-       \e[C        next-file
-       \e[D        prev-file
-       \eOC        next-file
-       \eOD        prev-file""")
-
-    os.system('lesskey ' + os.environ['HOME'] + '/.lesskey')
-    print(info_message + 'Navigation keys for less has been redefined and to navigate')
-    print(info_message + 'through files you can use left and right arrows instead of :n and :p')
+        os.system('lesskey ' + os.environ['HOME'] + '/.lesskey')
+        print(info_message + 'Navigation keys for less has been redefined and to navigate')
+        print(info_message + 'through files you can use left and right arrows instead of :n and :p')
 
 
 def update():
@@ -83,8 +84,12 @@ def find_files():
         if len(result) == 0:
             print(error_message + 'Nothing was found')
         else:
-            os.system('less ' + ' '.join(result))
-
+            if os.name == 'posix':
+                os.system('less ' + ' '.join(result))
+            elif os.name == 'nt':
+                [os.system("start "+ filename) for filename in result ]
+            else:
+                print error_message + 'The current system is not supported'
 
 if __name__ == '__main__':
     if not os.path.isdir(help_path):
