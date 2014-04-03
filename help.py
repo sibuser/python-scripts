@@ -9,21 +9,23 @@ import commands
 help_path = os.environ['HOME'] + '/help'
 info_message = '\033[1;32mINFO:\033[1;m '
 error_message = '\033[1;31mERROR:\033[1;m '
+
+
 def install():
     """
     Creates a help folder in your home directory with one file as an example.
-    Redefines keys for less program to be able to navigate through opened files by
-    arrow keys (lef and right) instead of default (:n and :p).
+    Redefines keys for less program to be able to navigate through opened files
+    by arrow keys (lef and right) instead of default (:n and :p).
     """
     if not os.path.isdir(help_path):
         os.mkdir(help_path)
-        print(info_message + 'The help folder has been created at \'' + help_path + '\'')
+        print(info_message + 'The help folder has been created at \'' +
+              help_path + '\'')
 
     with open(help_path + '/my_first_note', 'w') as f:
         f.write('Congratulations! This is your first note.\n'
                 'Now you can use it.\n')
         print(info_message + 'The first note has been created \'my_first_note\'')
-
 
     with open(os.environ['HOME'] + '/.lesskey', 'w') as lesskey:
         lesskey.write("""\tx         quit
@@ -71,16 +73,17 @@ def find_files():
     if len(sys.argv[1:]) == 0:
         print(get_all_tags())
     else:
-        files = '-name "*' + sys.argv[1] + '*"'
-        for arg in sys.argv[1:]:
-            files = files + ' -a -name "*' + arg + '*"'
+        all_files = os.listdir(help_path)
+        all_tags = sys.argv[1:]
+        exclude = ['.git', 'deleted', '~$']
 
-        result = commands.getoutput('find -L ~/help ' + files + '| grep -v \"~$\" | grep -v \".git/\"'
-                                                                '| grep -v \"deleted\"')
-        if result == '':
+        result = [help_path + '/' + filename for filename in all_files
+                  if all(map(lambda tag: tag in filename, all_tags))
+            and all(map(lambda tag: tag not in filename, exclude))]
+        if len(result) == 0:
             print(error_message + 'Nothing was found')
         else:
-            os.system('less ' + ' '.join(result.strip().split()))
+            os.system('less ' + ' '.join(result))
 
 
 if __name__ == '__main__':
@@ -93,4 +96,3 @@ if __name__ == '__main__':
         else:
             sys.exit(1)
     find_files()
-
