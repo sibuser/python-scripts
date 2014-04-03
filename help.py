@@ -31,9 +31,10 @@ def install():
        \e[D        prev-file
        \eOC        next-file
        \eOD        prev-file""")
+
     os.system('lesskey ' + os.environ['HOME'] + '/.lesskey')
-    print('Navigation keys for less has been redefined and to navigate\n',
-          'through files you can use left and right arrows instead of :n and :p')
+    print('Navigation keys for less has been redefined and to navigate')
+    print('through files you can use left and right arrows instead of :n and :p')
 
 
 def update():
