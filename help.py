@@ -86,7 +86,7 @@ if __name__ == '__main__':
     if not os.path.isdir(help_path):
         filename = raw_input('Probably you run this script first time '
                              'do you want to continue?[Y/n]')
-        if filename == 'Yes' or filename == 'yes' or filename == '':
+        if filename == 'Y' or filename == 'y' or filename == '':
             install()
             sys.exit(0)
         else:
