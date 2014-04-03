@@ -7,8 +7,8 @@ import os
 import commands
 
 help_path = os.environ['HOME'] + '/help'
-
-
+info_message = '\033[1;32mINFO:\033[1;m '
+error_message = '\033[1;31mINFO:\033[1;m '
 def install():
     """
     Creates a help folder in your home directory with one file as an example.
@@ -17,12 +17,13 @@ def install():
     """
     if not os.path.isdir(help_path):
         os.mkdir(help_path)
-        print('The help folder has been created at \'' + help_path + '\'')
+        print(info_message + 'The help folder has been created at \'' + help_path + '\'')
 
     with open(help_path + '/my_first_note', 'w') as f:
         f.write('Congratulations! This is your first note.\n'
                 'Now you can use it.\n')
-        print('The first note has been created')
+        print(info_message + 'The first note has been created \'my_first_note\'')
+
 
     with open(os.environ['HOME'] + '/.lesskey', 'w') as lesskey:
         lesskey.write("""\tx         quit
@@ -33,8 +34,8 @@ def install():
        \eOD        prev-file""")
 
     os.system('lesskey ' + os.environ['HOME'] + '/.lesskey')
-    print('Navigation keys for less has been redefined and to navigate')
-    print('through files you can use left and right arrows instead of :n and :p')
+    print(info_message + 'Navigation keys for less has been redefined and to navigate')
+    print(info_message + 'through files you can use left and right arrows instead of :n and :p')
 
 
 def update():
@@ -77,7 +78,7 @@ def find_files():
         result = commands.getoutput('find -L ~/help ' + files + '| grep -v \"~$\" | grep -v \".git/\"'
                                                                 '| grep -v \"deleted\"')
         if result == '':
-            print('Nothing was found')
+            print(error_message + 'Nothing was found')
         else:
             os.system('less ' + ' '.join(result.strip().split()))
 
