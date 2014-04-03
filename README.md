@@ -1,2 +1,2 @@
-This tool formats the text from the input file and fixes all indentations in format of Doxygen 
-documentation. By default result will be printed into output stream.
+Here you can find some scripts for everyday life.
+Most of them are intended to be used under Linux system.
