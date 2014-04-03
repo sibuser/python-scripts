@@ -17,7 +17,7 @@ def install():
     """
     if not os.path.isdir(help_path):
         os.mkdir(help_path)
-        print('The help folder has been created at ', help_path)
+        print('The help folder has been created at \'' + help_path + '\'')
 
     with open(help_path + '/my_first_note', 'w') as f:
         f.write('Congratulations! This is your first note.\n'
