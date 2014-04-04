@@ -12,6 +12,15 @@ help_path = os.environ['HOME'] + '/help'
 info_message = '\033[1;32mINFO:\033[1;m '
 error_message = '\033[1;31mERROR:\033[1;m '
 
+"""
+This script is intended to be used a small help system where you can save
+all your small notes in different files. Each name is a set of tags divided
+by underscore sign like my_first_note.
+If there are more then one file then all will be opened in less editor for linux and
+default editor in windows.
+You can sort out files by giving several tags like 'help my note'.
+"""
+
 
 def install():
     """
@@ -56,6 +65,9 @@ def update():
 
 
 def columnize(sequence, columns=4):
+    """
+    Returns a column formated string of items from a list
+    """
     size, remainder = divmod(len(sequence), columns)
     if remainder:
         size += 1
@@ -65,10 +77,12 @@ def columnize(sequence, columns=4):
 
 exclude = ['.git', 'deleted', '~$', '~']
 
+
 def print_all_tags():
     """
     Returns all tags from the help directory.
     """
+    # returns sorted unic tags used in names of files
     all_tags = sorted(set(('_'.join([filename for filename in os.listdir(help_path)
               if all(map(lambda tag: tag not in filename, exclude))])).split('_')))
 
