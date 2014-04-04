@@ -64,7 +64,7 @@ def update():
     os.chdir(old_pwd)
 
 
-def columnize(sequence, columns=4):
+def columnize(sequence, columns=8):
     """
     Returns a column formated string of items from a list
     """
