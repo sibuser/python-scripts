@@ -6,6 +6,7 @@ import sys
 import os
 import commands
 import subprocess
+from itertools import izip_longest, islice
 
 help_path = os.environ['HOME'] + '/help'
 info_message = '\033[1;32mINFO:\033[1;m '
@@ -54,16 +55,25 @@ def update():
     os.chdir(old_pwd)
 
 
-def get_all_tags():
+def columnize(sequence, columns=4):
+    size, remainder = divmod(len(sequence), columns)
+    if remainder:
+        size += 1
+    slices = [islice(sequence, pos, pos + size)
+              for pos in xrange(0, len(sequence), size)]
+    return izip_longest(fillvalue='', *slices)
+
+exclude = ['.git', 'deleted', '~$', '~']
+
+def print_all_tags():
     """
     Returns all tags from the help directory.
     """
-    old_pwd = os.getcwd()
-    os.chdir(help_path)
-    tags = commands.getoutput('ls | grep -v "install"| grep -v "~" | grep -v "deleted" | grep -v ".git" |'
-                              ' tr \'_\' \' \' | tr \' \' \'\n\' | sort -u | column -c 100')
-    os.chdir(old_pwd)
-    return tags
+    all_tags = sorted(set(('_'.join([filename for filename in os.listdir(help_path)
+              if all(map(lambda tag: tag not in filename, exclude))])).split('_')))
+
+    for values in columnize(all_tags):
+        print ' '.join(value.ljust(20) for value in values)
 
 
 def find_files():
@@ -71,25 +81,22 @@ def find_files():
     Searches all files in the help directory and open them in less.
     Supports several tags at the same time and matches them by word occurrence.
     """
-    if len(sys.argv[1:]) == 0:
-        print(get_all_tags())
-    else:
-        all_files = os.listdir(help_path)
-        all_tags = sys.argv[1:]
-        exclude = ['.git', 'deleted', '~$']
+    all_files = os.listdir(help_path)
+    all_tags = sys.argv[1:]
 
-        result = [help_path + '/' + filename for filename in all_files
-                  if all(map(lambda tag: tag in filename, all_tags))
-            and all(map(lambda tag: tag not in filename, exclude))]
-        if len(result) == 0:
-            print(error_message + 'Nothing was found')
+    result = [help_path + '/' + filename for filename in all_files
+              if all(map(lambda tag: tag in filename, all_tags))
+        and all(map(lambda tag: tag not in filename, exclude))]
+    if len(result) == 0:
+        print(error_message + 'Nothing was found')
+    else:
+        if os.name == 'posix':
+            os.system('less ' + ' '.join(result))
+        elif os.name == 'nt':
+            [os.system("start " + filename) for filename in result]
         else:
-            if os.name == 'posix':
-                os.system('less ' + ' '.join(result))
-            elif os.name == 'nt':
-                [os.system("start "+ filename) for filename in result ]
-            else:
-                print error_message + 'The current system is not supported'
+            print error_message + 'The current system is not supported'
+
 
 if __name__ == '__main__':
     if not os.path.isdir(help_path):
@@ -100,4 +107,7 @@ if __name__ == '__main__':
             sys.exit(0)
         else:
             sys.exit(1)
-    find_files()
+    if len(sys.argv[1:]) == 0:
+        print_all_tags()
+    else:
+        find_files()
