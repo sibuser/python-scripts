@@ -123,5 +123,7 @@ if __name__ == '__main__':
             sys.exit(1)
     if len(sys.argv[1:]) == 0:
         print_all_tags()
+    elif '--update' in sys.argv[:]:
+        update()
     else:
         find_files()
