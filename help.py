@@ -79,7 +79,7 @@ def columnize(sequence, columns=8):
               for pos in xrange(0, len(sequence), size)]
     return izip_longest(fillvalue='', *slices)
 
-exclude = ['.git', 'deleted', '~$', '~']
+exclude = ['.git', 'deleted', '~$', '~', '.lesskey']
 
 
 def print_all_tags():
