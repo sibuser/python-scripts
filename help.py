@@ -5,7 +5,6 @@ __author__ = 'sibuser'
 import sys
 import os
 import commands
-import subprocess
 from itertools import izip_longest, islice
 
 help_path = os.environ['HOME'] + '/help'
@@ -16,8 +15,8 @@ error_message = '\033[1;31mERROR:\033[1;m '
 This script is intended to be used a small help system where you can save
 all your small notes in different files. Each name is a set of tags divided
 by underscore sign like my_first_note.
-If there are more then one file then all will be opened in less editor for linux and
-default editor in windows.
+If there are more then one file then all will be opened in less editor for
+linux and default editor in windows.
 You can sort out files by giving several tags like 'help my note'.
 """
 
@@ -36,7 +35,8 @@ def install():
     with open(help_path + '/my_first_note', 'w') as f:
         f.write('Congratulations! This is your first note.\n'
                 'Now you can use it.\n')
-        print(info_message + 'The first note has been created \'my_first_note\'')
+        print(info_message +
+              'The first note has been created \'my_first_note\'')
     if os.name == 'posix':
         with open(os.environ['HOME'] + '/.lesskey', 'w') as lesskey:
             lesskey.write("""\tx         quit
@@ -47,8 +47,11 @@ def install():
                \eOD        prev-file""")
 
         os.system('lesskey ' + os.environ['HOME'] + '/.lesskey')
-        print(info_message + 'Navigation keys for less has been redefined and to navigate')
-        print(info_message + 'through files you can use left and right arrows instead of :n and :p')
+        print(info_message +
+              'Navigation keys for less has been redefined and to navigate')
+        print(info_message +
+              'through files you can use left and right arrows instead of :n' +
+              ' and :p')
 
 
 def update():
@@ -59,8 +62,9 @@ def update():
     """
     old_pwd = os.getcwd()
     os.chdir(help_path)
-    commands.getoutput('git add -A . | git diff HEAD --name-only | tr \'\n\' \' \' '
-                       '| awk \'{cmd = "git commit -m \""$0"\""; system(cmd)}\'\', \'')
+    commands.getoutput('git add -A . | git diff HEAD --name-only | '
+                       'tr \'\n\' \' \' | awk \'{cmd = "git commit -m '
+                       '\""$0"\""; system(cmd)}\'\', \'')
     os.chdir(old_pwd)
 
 
@@ -75,7 +79,7 @@ def columnize(sequence, columns=8):
               for pos in xrange(0, len(sequence), size)]
     return izip_longest(fillvalue='', *slices)
 
-exclude = ['.git', 'deleted', '~$', '~', '.lesskey']
+exclude = ['.git', 'deleted', '~$', '~']
 
 
 def print_all_tags():
@@ -83,8 +87,10 @@ def print_all_tags():
     Returns all tags from the help directory.
     """
     # returns sorted unic tags used in names of files
-    all_tags = sorted(set(('_'.join([filename for filename in os.listdir(help_path)
-              if all(map(lambda tag: tag not in filename, exclude))])).split('_')))
+    all_tags = sorted(set(
+        ('_'.join([filename for filename in os.listdir(help_path)
+         if all(map(
+                lambda tag: tag not in filename, exclude))])).split('_')))
 
     for values in columnize(all_tags):
         print ' '.join(value.ljust(20) for value in values)
@@ -100,7 +106,7 @@ def find_files():
 
     result = [help_path + '/' + filename for filename in all_files
               if all(map(lambda tag: tag in filename, all_tags))
-        and all(map(lambda tag: tag not in filename, exclude))]
+              and all(map(lambda tag: tag not in filename, exclude))]
     if len(result) == 0:
         print(error_message + 'Nothing was found')
     else:
@@ -123,5 +129,7 @@ if __name__ == '__main__':
             sys.exit(1)
     if len(sys.argv[1:]) == 0:
         print_all_tags()
+    elif '--update' in sys.argv[:]:
+        update()
     else:
         find_files()
