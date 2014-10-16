@@ -13,7 +13,7 @@ def insert_output(view, edit):
             r = region
 
         try:
-            p = subprocess.Popen(['uncrustify', '-c', uncrustify_cfg, '-l', 'cpp'],
+            p = Popen(['uncrustify', '-c', uncrustify_cfg, '-l', 'cpp'],
                 stdin=PIPE, stdout=PIPE, stderr=PIPE)
             result, err = p.communicate(input=view.substr(r).encode('utf-8'))
 
