@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 __email__ = 'sibuser.nsk@gmail.com'
 __author__ = 'sibuser'
 
@@ -6,8 +8,8 @@ import sys
 import os
 import commands
 from itertools import izip_longest, islice
-
-help_path = os.environ['HOME'] + '/help'
+home_path = os.path.expanduser("~")
+help_path = os.path.join(home_path, 'help')
 info_message = '\033[1;32mINFO:\033[1;m '
 error_message = '\033[1;31mERROR:\033[1;m '
 
@@ -32,13 +34,13 @@ def install():
         print(info_message + 'The help folder has been created at \'' +
               help_path + '\'')
 
-    with open(help_path + '/my_first_note', 'w') as f:
+    with open(os.path.join(help_path, 'my_first_note'), 'w') as f:
         f.write('Congratulations! This is your first note.\n'
                 'Now you can use it.\n')
         print(info_message +
               'The first note has been created \'my_first_note\'')
     if os.name == 'posix':
-        with open(os.environ['HOME'] + '/.lesskey', 'w') as lesskey:
+        with open(os.path.join(home_path, '.lesskey'), 'w') as lesskey:
             lesskey.write("""\tx         quit
                 X         quit
                \e[C        next-file
@@ -46,7 +48,8 @@ def install():
                \eOC        next-file
                \eOD        prev-file""")
 
-        os.system('lesskey ' + os.environ['HOME'] + '/.lesskey')
+        os.system('lesskey {0}'.format(os.path.join(home_path,
+                                                    '.lesskey')))
         print(info_message +
               'Navigation keys for less has been redefined and to navigate')
         print(info_message +
@@ -104,14 +107,14 @@ def find_files():
     all_files = os.listdir(help_path)
     all_tags = sys.argv[1:]
 
-    result = [help_path + '/' + filename for filename in all_files
+    result = [os.path.join(help_path, filename) for filename in all_files
               if all(map(lambda tag: tag in filename, all_tags))
               and all(map(lambda tag: tag not in filename, exclude))]
     if len(result) == 0:
         print(error_message + 'Nothing was found')
     else:
         if os.name == 'posix':
-            os.system('less ' + ' '.join(result))
+            os.system('less {0}'.format(' '.join(result)))
         elif os.name == 'nt':
             [os.system("start " + filename) for filename in result]
         else:
@@ -122,14 +125,14 @@ if __name__ == '__main__':
     if not os.path.isdir(help_path):
         filename = raw_input('Probably you run this script first time '
                              'do you want to continue?[Y/n]')
-        if filename == 'Y' or filename == 'y' or filename == '':
+        if filename.lower() == 'y' or filename == '':
             install()
             sys.exit(0)
         else:
             sys.exit(1)
-    if len(sys.argv[1:]) == 0:
+    if len(sys.argv) == 1:
         print_all_tags()
-    elif '--update' in sys.argv[:]:
+    elif '--update' in sys.argv:
         update()
     else:
         find_files()
