@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+# -*- coding: utf-8 -*-
 """
 \copyright (c) 2013, Alexey Ulyanov <sibuser.nsk@gmail.com>
 
