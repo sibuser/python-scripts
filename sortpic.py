@@ -74,7 +74,7 @@ months = {
 }
 
 
-def proceed_sort(path):
+def proceed_sort(path, is_dry):
     for root, dirs, files in os.walk(path):
         for file in files:
             date_time = fetch_exif(os.path.join(root, file)).get('Image DateTime', '')
@@ -94,15 +94,18 @@ def proceed_sort(path):
                 month = months[str(m.group(2))]
                 day = m.group(3)
 
-                if not os.path.exists(os.path.join('target', year, month, day)):
-                    os.makedirs(os.path.join('target', year, month, day))
-                    # print os.path.join('target', year, month, day, file)
+                if not is_dry:
+                    if not os.path.exists(os.path.join('target', year, month, day)):
+                        os.makedirs(os.path.join('target', year, month, day))
 
-                if not os.path.exists(os.path.join('target', year, month, day, file)):
-                    print(file, date_time)
-                    shutil.move(os.path.join(root, file), os.path.join('target', year, month, day, file))
+                    if not os.path.exists(os.path.join('target', year, month, day, file)):
+                        print(file, date_time)
+                        shutil.move(os.path.join(root, file), os.path.join('target', year, month, day, file))
+                    else:
+                        print(os.path.join('target', year, month, day, file), 'exitst!!!!')
                 else:
-                    print(os.path.join('target', year, month, day, file), 'exitst!!!!')
+                    print(os.path.join('target', year, month, day, file))
+
 
 
 def revert_sort(path):
@@ -128,9 +131,16 @@ def main(args=None):
         description='Sort files.',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('paths', nargs='+', metavar='PATH', help='paths from where will be taken all pictures')
+    parser.add_argument('--dry', action='store_true', help='dry run')
+    parser.add_argument('-r', '--revert', action='store_true', help='revert changes')
+
     opts = parser.parse_args(args)
     check_path(opts.paths)
-    [proceed_sort(path) for path in opts.paths]
+    if opts.revert:
+        [revert_sort(path) for path in opts.paths]
+    else:
+        [proceed_sort(path, opts.dry) for path in opts.paths]
+
 
 
 if __name__ == '__main__':
