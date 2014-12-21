@@ -50,7 +50,8 @@ def fetch_exif(path):
     exif_keys = exif_tags.keys()
 
     with open(path, 'rb') as image_file:
-        image_tags = exifread.process_file(image_file, details=False)
+        # image_tags = exifread.process_file(image_file, details=False)
+        image_tags = exifread.process_file(image_file)
         image_keys = image_tags.keys()
         for key_name in exif_keys:
             if key_name in image_keys:
@@ -78,6 +79,7 @@ def proceed_sort(path, is_dry):
     for root, dirs, files in os.walk(path):
         for file in files:
             date_time = fetch_exif(os.path.join(root, file)).get('Image DateTime', '')
+            # print(date_time)
             if date_time != '':
                 m = re.match('(\d+):(\d+):(\d+)\s\w+', str(date_time))
             else:
@@ -106,6 +108,26 @@ def proceed_sort(path, is_dry):
                 else:
                     print(os.path.join('target', year, month, day, file))
 
+def rename_pitctures(path, is_dry):
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            date_time = fetch_exif(os.path.join(root, file)).get('Image DateTime')
+            if date_time != '':
+                m = re.match('(\d+):(\d+):(\d+)\s(\d+):(\d+):(\d+)', str(date_time))
+                year = m.group(1)
+                month = m.group(2)
+                day = m.group(3)
+                hours = m.group(4)
+                minutes = m.group(5)
+                seconds = m.group(6)                    
+                extension = file.split('.')[-1]
+                new_picture_name = '{0}-{1}-{2} {3}:{4}:{5}.{6}'.format(year, month, day, hours, minutes, seconds, extension)
+                print(new_picture_name)
+                
+                if not is_dry:
+                    shutil.move(os.path.join(root, file), os.path.join(root, new_picture_name))
+
+            # print(date_time)
 
 
 def revert_sort(path):
@@ -131,6 +153,7 @@ def main(args=None):
         description='Sort files.',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('paths', nargs='+', metavar='PATH', help='paths from where will be taken all pictures')
+    parser.add_argument('--rename', action='store_true', help='Rename pictures')
     parser.add_argument('--dry', action='store_true', help='dry run')
     parser.add_argument('-r', '--revert', action='store_true', help='revert changes')
 
@@ -138,6 +161,8 @@ def main(args=None):
     check_path(opts.paths)
     if opts.revert:
         [revert_sort(path) for path in opts.paths]
+    elif opts.rename:
+        [rename_pitctures(path, opts.dry) for path in opts.paths]
     else:
         [proceed_sort(path, opts.dry) for path in opts.paths]
 
